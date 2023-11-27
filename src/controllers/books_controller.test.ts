@@ -1,8 +1,8 @@
 import request from "supertest";
 import { app } from "../app";
 import { Book } from "../models/book";
-
 import * as bookService from "../services/books";
+
 jest.mock("../services/books");
 
 afterEach(() => {
@@ -29,7 +29,6 @@ describe("GET /api/v1/books endpoint", () => {
 	test("status code successfully 200", async () => {
 		// Act
 		const res = await request(app).get("/api/v1/books");
-
 		// Assert
 		expect(res.statusCode).toEqual(200);
 	});
@@ -131,5 +130,21 @@ describe("POST /api/v1/books endpoint", () => {
 
 		// Assert
 		expect(res.statusCode).toEqual(400);
+	});
+});
+
+describe("Delete /api/v1/books{bookID} endpoint", () => {
+	test("status code return 404 for the book not found to delete", async () => {
+		jest
+			.spyOn(bookService, "deleteBook")
+			// this is a weird looking type assertion!
+			// it's necessary because TS knows we can't actually return unknown here
+			// BUT we want to check that in the event a book is missing we return a 404
+			.mockResolvedValue(undefined as unknown as Book);
+		// Act
+		const res = await request(app).get("/api/v1/books/77");
+
+		// Assert
+		expect(res.statusCode).toEqual(404);
 	});
 });

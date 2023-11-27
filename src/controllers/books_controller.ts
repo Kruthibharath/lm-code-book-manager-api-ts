@@ -9,7 +9,6 @@ export const getBooks = async (req: Request, res: Response) => {
 export const getBook = async (req: Request, res: Response) => {
 	const bookId = req.params.bookId;
 	const book = await bookService.getBook(Number(bookId));
-
 	if (book) {
 		res.json(book).status(200);
 	} else {
@@ -34,4 +33,14 @@ export const updateBook = async (req: Request, res: Response) => {
 
 	const book = await bookService.updateBook(bookId, bookUpdateData);
 	res.status(204).json(book);
+};
+
+export const deleteBook = async (req: Request, res: Response) => {
+	const bookId = req.params.bookId;
+	const book = await bookService.deleteBook(Number(bookId));
+	if (book) {
+		res.json(book).status(200);
+	} else {
+		res.status(404).json("Not found");
+	}
 };
