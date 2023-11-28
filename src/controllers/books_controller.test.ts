@@ -68,10 +68,8 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 		const mockGetBook = jest
 			.spyOn(bookService, "getBook")
 			.mockResolvedValue(dummyBookData[1] as Book);
-
 		// Act
 		const res = await request(app).get("/api/v1/books/2");
-
 		// Assert
 		expect(res.statusCode).toEqual(200);
 	});
@@ -97,10 +95,8 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 		jest
 			.spyOn(bookService, "getBook")
 			.mockResolvedValue(dummyBookData[1] as Book);
-
 		// Act
 		const res = await request(app).get("/api/v1/books/2");
-
 		// Assert
 		expect(res.body).toEqual(dummyBookData[1]);
 	});
@@ -112,7 +108,6 @@ describe("POST /api/v1/books endpoint", () => {
 		const res = await request(app)
 			.post("/api/v1/books")
 			.send({ bookId: 3, title: "Fantastic Mr. Fox", author: "Roald Dahl" });
-
 		// Assert
 		expect(res.statusCode).toEqual(201);
 	});
@@ -134,15 +129,23 @@ describe("POST /api/v1/books endpoint", () => {
 });
 
 describe("Delete /api/v1/books{bookID} endpoint", () => {
-	test("status code return 404 for the book not found to delete", async () => {
+	test("status code successfully 200 for a book that is found", async () => {
+		// Arrange
+		const mockGetBook = jest
+			.spyOn(bookService, "deleteBook")
+			.mockResolvedValue(1);
+		// Act
+		const res = await request(app).delete("/api/v1/books/1");
+		// Assert
+		expect(res.statusCode).toEqual(200);
+	});
+	test("status code successfully 404 for a book that is not found", async () => {
+		// Arrange
 		jest
 			.spyOn(bookService, "deleteBook")
-			// this is a weird looking type assertion!
-			// it's necessary because TS knows we can't actually return unknown here
-			// BUT we want to check that in the event a book is missing we return a 404
-			.mockResolvedValue(undefined as unknown as Book);
+			.mockResolvedValue(undefined as unknown as number);
 		// Act
-		const res = await request(app).get("/api/v1/books/77");
+		const res = await request(app).delete("/api/v1/books/77");
 
 		// Assert
 		expect(res.statusCode).toEqual(404);
