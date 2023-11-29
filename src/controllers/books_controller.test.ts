@@ -150,12 +150,20 @@ describe("Delete /api/v1/books{bookID} endpoint", () => {
 		// Assert
 		expect(res.statusCode).toEqual(404);
 	});
-	test("controller successfully returns book object as JSON", async () => {
+	test("controller successfully delete a record book from the object JSON", async () => {
 		// Arrange
 		jest.spyOn(bookService, "deleteBook").mockResolvedValue(1);
 		// Act
 		const res = await request(app).delete("/api/v1/books/1");
 		// Assert
-		expect(res.body).toEqual(dummyBookData);
+		expect(res.body).toEqual(1);
+	});
+	test("should return false for a non-existent book during deletion", async () => {
+		// Arrange
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(5);
+		// Act
+		const res = await request(app).delete("/api/v1/boo");
+		// Assert
+		expect(res).toBe(false);
 	});
 });
