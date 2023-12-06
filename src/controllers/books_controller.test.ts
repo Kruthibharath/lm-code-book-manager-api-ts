@@ -129,41 +129,49 @@ describe("POST /api/v1/books endpoint", () => {
 });
 
 describe("Delete /api/v1/books{bookID} endpoint", () => {
-	test("status code successfully 200 for a book that is found", async () => {
+	test("Success message with the status code 200 for a book that is found", async () => {
 		// Arrange
-		const mockGetBook = jest
-			.spyOn(bookService, "deleteBook")
-			.mockResolvedValue(1);
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(1);
 		// Act
 		const res = await request(app).delete("/api/v1/books/1");
 		// Assert
 		expect(res.statusCode).toEqual(200);
+		expect(res.body).toHaveProperty("message", "Book deleted successfully");
 	});
-	test("status code successfully 404 for a book that is not found", async () => {
+	test("returns status code 404 for a book that is not found", async () => {
 		// Arrange
 		jest
 			.spyOn(bookService, "deleteBook")
 			.mockResolvedValue(undefined as unknown as number);
 		// Act
 		const res = await request(app).delete("/api/v1/books/77");
-
 		// Assert
 		expect(res.statusCode).toEqual(404);
+		expect(res.body).toHaveProperty(
+			"message",
+			"Book not found or already deleted"
+		);
 	});
-	test("controller successfully delete a record book from the object JSON", async () => {
-		// Arrange
-		jest.spyOn(bookService, "deleteBook").mockResolvedValue(1);
+	test("should handle invalid book ID forma", async () => {
 		// Act
-		const res = await request(app).delete("/api/v1/books/1");
+		const res = await request(app).delete("/api/v1/books/invalidBookID");
 		// Assert
-		expect(res.body).toEqual(1);
+		expect(res.statusCode).toEqual(404);
+		expect(res.body).toHaveProperty(
+			"message",
+			"Book not found or already deleted"
+		);
 	});
-	test("should return false for a non-existent book during deletion", async () => {
+	test("should handle internal server error during deletion", async () => {
 		// Arrange
-		jest.spyOn(bookService, "deleteBook").mockResolvedValue(5);
+		jest
+			.spyOn(bookService, "deleteBook")
+			.mockRejectedValue(new Error("Database error"));
+
 		// Act
-		const res = await request(app).delete("/api/v1/books/boo");
+		const res = await request(app).delete("/api/v1/books/1"); // Assuming book with ID 1 exists
 		// Assert
-		expect(res).toBe(false);
+		expect(res.status).toBe(500);
+		expect(res.body).toHaveProperty("message", "Internal server error");
 	});
 });
