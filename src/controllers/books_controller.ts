@@ -36,11 +36,15 @@ export const updateBook = async (req: Request, res: Response) => {
 
 export const deleteBook = async (req: Request, res: Response) => {
 	//const bookUpdateData = req.body;
-	const bookId = Number.parseInt(req.params.bookId);
-	const book = await bookService.deleteBook(bookId);
-	if (book) {
-		res.json(book).status(200);
-	} else {
-		res.status(404).json({ message: "Not found" });
+	try {
+		const bookId = Number.parseInt(req.params.bookId);
+		const deletedRows = await bookService.deleteBook(bookId);
+		if (deletedRows > 0) {
+			res.status(200).json({ message: "Book deleted successfully" });
+		} else {
+			res.status(404).json({ message: "Book not found or already deleted" });
+		}
+	} catch (error) {
+		res.status(500).json({ message: "Internal server error" });
 	}
 };
