@@ -162,7 +162,7 @@ describe("Delete /api/v1/books{bookID} endpoint", () => {
 		// Arrange
 		jest.spyOn(bookService, "deleteBook").mockResolvedValue(5);
 		// Act
-		const res = await request(app).delete("/api/v1/boo");
+		const res = await request(app).delete("/api/v1/books/boo");
 		// Assert
 		expect(res).toBe(false);
 	});

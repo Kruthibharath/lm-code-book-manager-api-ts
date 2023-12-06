@@ -23,10 +23,15 @@ export const updateBook = async (bookId: number, book: Book) => {
 	});
 };
 
-export const deleteBook = async (bookId: number, book: Book) => {
-	return Book.destroy({
-		where: {
-			bookId,
-		},
-	});
+export const deleteBook = async (bookId: number) => {
+	try {
+		const deletedRows = await Book.destroy({
+			where: {
+				bookId,
+			},
+		});
+		return deletedRows;
+	} catch (error) {
+		throw new Error("Error while deleting the books!");
+	}
 };
